@@ -30,8 +30,7 @@ commands:
 
             export NPM=$(which npm | head -1)
             if [[ -n $NPM ]]; then
-              if which sudo > /dev/null; then
-                sudo $NPM install -g stitch-cli
+              sudo $NPM install -g stitch-cli
             else
               echo "Unable to install Stich-CLI"
               exit 1
