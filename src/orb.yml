@@ -1,0 +1,74 @@
+version: 2.1
+
+description: |
+  Install and configure the MongoDb Stich command-line interface (stitch-cli).
+
+executors:
+  default:
+    description: |
+      installing/configuring the stitch-cli 
+
+    parameters:
+      node-version:
+        type: string
+        default: "10"
+
+    docker:
+      - image: circleci/python:<<parameters.node-version>>
+
+commands:
+  install:
+    description: "Install the Stitch-CLI via npm if not already installed."
+    steps:
+      - run:
+          name: "Install Stich-CLI"
+          command: |
+            if which stich-cli > /dev/null; then
+              echo "The Stich-CLI is already installed. Skipping."
+              exit 0
+            fi
+
+            export NPM=$(which npm | head -1)
+            if [[ -n $NPM ]]; then
+              if which sudo > /dev/null; then
+                sudo $NPM install -g stitch-cli
+            else
+              echo "Unable to install Stich-CLI"
+              exit 1
+            fi
+
+  setup:
+    description: |
+      Configure and store stitch credentials in
+      ~/.config/stitch/stitch
+
+    parameters:
+      stitch_public_api_key:
+        description: |
+          Public api key from mongoDB atlas.
+        type: env_var_name
+        default: STITCH_PUBLIC_API_KEY 
+
+      stitch_private_api_key:
+        description: |
+          Private api key from mongodb atlas.
+        type: env_var_name
+        default: STITCH_PRIVATE_API_KEY
+
+    steps:
+      - install
+      - run:
+          name: Configure MongoDb Access Keys
+          command: |
+            stitch-cli login --api-key=<<parameters.stitch_public_api_key>> --private-api-key=<<parameters.stitch_private_api_key>>
+
+  import:
+    description: |
+      Import Stitch Apps to MongoDB
+    parameters:
+      stitch_app_id:
+        description: |
+          App id from desired stitch-app
+        type: env_var_name
+        default: STITCH_APP_ID
+      
