@@ -14,7 +14,7 @@ executors:
         default: "10"
 
     docker:
-      - image: circleci/python:<<parameters.node-version>>
+      - image: circleci/node:<<parameters.node-version>>
 
 commands:
   install:
@@ -71,4 +71,14 @@ commands:
           App id from desired stitch-app
         type: env_var_name
         default: STITCH_APP_ID
-      
+
+      stitch_app_path:
+        description: |
+          Workdir path 
+        type: env_var_name
+        dafault: STITCH_APP_PATH
+    steps:
+      - run:
+        name: Deploy/import a stitch app
+        command: |
+          stitch-cli import --app-id=<<parameters.stitch_app_id>> --path=<<parameters.stitch_app_path>>
