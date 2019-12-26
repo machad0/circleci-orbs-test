@@ -30,6 +30,7 @@ commands:
 
             export NPM=$(which npm | head -1)
             if [[ -n $NPM ]]; then
+              sudo chmod 755 -R  /usr/local/lib/node_modules/
               sudo npm install -g mongodb-stitch-cli
             else
               echo "Unable to install Stich-CLI"
